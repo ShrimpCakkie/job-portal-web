@@ -1,0 +1,4 @@
+.DS_Store
+node_modules/
+dist/
+public/fonts/satoshi-variable.woff2
