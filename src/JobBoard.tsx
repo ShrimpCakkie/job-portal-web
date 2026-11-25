@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useActivities, type Activity } from './activity';
 import { jobs, locations, schedules, type Job } from './jobs';
 import { boardHref, replaceBoardView, tabs, type BoardView, type Tab } from './navigation';
-import { Asset, Avatar, Dialog, JobIdentity, JobMeta, JobTags } from './ui';
+import { Asset, Avatar, Dialog, Icon, JobIdentity, JobMeta, JobTags } from './ui';
 
 const tabMessages: Record<Tab, string> = {
   Discover: 'There are no open jobs to show.',
@@ -78,7 +78,7 @@ function FilterDialog({ view, onClose }: { view: BoardView; onClose: () => void 
 
 function JobCard({ job, view }: { job: Job; view: BoardView }) {
   const href = boardHref(view, job.id);
-  const dark = job.brand === 'spotify';
+  const hasLightMeta = job.brand === 'spotify';
   const titleId = `title-${job.id}`;
 
   return (
@@ -87,15 +87,15 @@ function JobCard({ job, view }: { job: Job; view: BoardView }) {
         <div className="job-card__art" aria-hidden="true"><Asset name={`card-${job.brand}.svg`} /></div>
         <JobIdentity job={job} titleId={titleId} />
         <a className="job-card__view" href={href} aria-label={`View ${job.title} at ${job.company}`}>
-          View <Asset name="view.svg" />
+          View <Icon name="view.svg" />
         </a>
-        <JobTags job={job} dark={dark} />
+        <JobTags job={job} />
         <p className="job-card__preview">
           {job.preview}...<a href={href} aria-label={`Read more about ${job.title} at ${job.company}`}>Read More</a>
         </p>
       </div>
-      {dark && <div className="job-card__divider"><Asset name="card-divider.svg" /></div>}
-      <JobMeta job={job} light={dark} />
+      {hasLightMeta && <div className="job-card__divider"><Icon name="card-divider.svg" /></div>}
+      <JobMeta job={job} surface={hasLightMeta ? 'light' : 'inverse'} />
     </article>
   );
 }
@@ -122,7 +122,7 @@ export function JobBoard({ view }: { view: BoardView }) {
       <StatusNavigation view={view} />
       <div className="job-search" role="search" aria-label="Find jobs">
         <label className="job-search__input">
-          <Asset name="search.svg" />
+          <Icon name="search.svg" />
           <span className="sr-only">Search for company or roles</span>
           <input
             type="search"
@@ -139,7 +139,7 @@ export function JobBoard({ view }: { view: BoardView }) {
           data-active={hasFilters}
           onClick={() => setFilterOpen(true)}
         >
-          <Asset name="filter.svg" />
+          <Icon name="filter.svg" />
         </button>
       </div>
       <span className="sr-only" role="status">{results.length} {results.length === 1 ? 'job' : 'jobs'}</span>

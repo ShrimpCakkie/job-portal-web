@@ -1,17 +1,47 @@
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import type { Job } from './jobs';
 
-export function Asset({ name, className, size }: { name: string; className?: string; size?: number }) {
+function assetUrl(name: string) {
+  return `${import.meta.env.BASE_URL}assets/${name}`;
+}
+
+export function Asset({ name, alt = '', className, size }: { name: string; alt?: string; className?: string; size?: number }) {
   return (
     <img
-      src={`${import.meta.env.BASE_URL}assets/${name}`}
-      alt=""
+      src={assetUrl(name)}
+      alt={alt}
       className={className}
       width={size}
       height={size}
       draggable={false}
     />
   );
+}
+
+const iconDimensions = {
+  'arrow-left.svg': [24, 24],
+  'arrow-right.svg': [24, 24],
+  'card-divider.svg': [350, 1],
+  'description.svg': [24, 24],
+  'experience-light.svg': [16, 16],
+  'filter.svg': [20, 20],
+  'history-light.svg': [16, 16],
+  'location-light.svg': [16, 16],
+  'requirements.svg': [24, 24],
+  'role.svg': [24, 24],
+  'schedule-light.svg': [16, 16],
+  'search.svg': [20, 20],
+  'view.svg': [16, 16],
+} as const;
+
+export type IconName = keyof typeof iconDimensions;
+
+export function Icon({ name }: { name: IconName }) {
+  const [width, height] = iconDimensions[name];
+  const source = new URL(assetUrl(name), document.baseURI).href;
+  const style = { width, height, '--icon-source': `url("${source}")` } as CSSProperties;
+
+  return <span className="icon" style={style} aria-hidden="true" />;
 }
 
 export function Avatar() {
@@ -30,28 +60,27 @@ export function JobIdentity({ job, titleId }: { job: Job; titleId?: string }) {
   );
 }
 
-export function JobTags({ job, dark = false }: { job: Job; dark?: boolean }) {
-  const tone = dark ? 'dark' : 'light';
+export function JobTags({ job }: { job: Job }) {
   const facts = [
-    ['location', job.location],
-    ['experience', job.experience],
-    ['schedule', job.schedule],
-  ];
+    ['location-light.svg', job.location],
+    ['experience-light.svg', job.experience],
+    ['schedule-light.svg', job.schedule],
+  ] as const;
 
   return (
-    <ul className={`job-tags${dark ? ' job-tags--dark' : ''}`} aria-label="Job information">
+    <ul className="job-tags" aria-label="Job information">
       {facts.map(([icon, text]) => (
-        <li key={icon}><Asset name={`${icon}-${tone}.svg`} />{text}</li>
+        <li key={icon}><Icon name={icon} />{text}</li>
       ))}
     </ul>
   );
 }
 
-export function JobMeta({ job, light = false }: { job: Job; light?: boolean }) {
+export function JobMeta({ job, surface = 'inverse' }: { job: Job; surface?: 'inverse' | 'light' }) {
   return (
-    <div className={`job-meta${light ? ' job-meta--light' : ''}`}>
+    <div className={`job-meta job-meta--${surface}`}>
       <span className="job-meta__posted">
-        <Asset name={light ? 'history-light.svg' : 'history.svg'} />{job.posted}
+        <Icon name="history-light.svg" />{job.posted}
       </span>
       <strong>{job.salary}</strong>
     </div>

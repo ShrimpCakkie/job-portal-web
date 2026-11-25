@@ -2,13 +2,13 @@ import { useState, type ReactNode } from 'react';
 import { setActivity, useActivities } from './activity';
 import type { Job } from './jobs';
 import { boardHref, type BoardView } from './navigation';
-import { Asset, Avatar, Dialog, JobIdentity, JobMeta, JobTags } from './ui';
+import { Avatar, Dialog, Icon, JobIdentity, JobMeta, JobTags, type IconName } from './ui';
 
-function DetailPanel({ title, icon, children }: { title: string; icon?: string; children: ReactNode }) {
+function DetailPanel({ title, icon, children }: { title: string; icon?: IconName; children: ReactNode }) {
   return (
     <section className="detail-panel">
       <h2>
-        {icon && <span className="detail-panel__icon"><Asset name={icon} /></span>}
+        {icon && <span className="detail-panel__icon"><Icon name={icon} /></span>}
         {title}
       </h2>
       {children}
@@ -27,7 +27,7 @@ export function JobDetails({ job, view }: { job: Job; view: BoardView }) {
   return (
     <div className="screen details-screen">
       <header className="top-line details-heading">
-        <a className="details-heading__back" href={boardHref(view)} aria-label="Back to jobs"><Asset name="arrow-left.svg" /></a>
+        <a className="details-heading__back" href={boardHref(view)} aria-label="Back to jobs"><Icon name="arrow-left.svg" /></a>
         <h1>Job Details</h1>
         <Avatar />
       </header>
@@ -36,7 +36,7 @@ export function JobDetails({ job, view }: { job: Job; view: BoardView }) {
           <div className={`job-summary job-summary--${job.brand}`}>
             <div className="job-summary__body">
               <JobIdentity job={job} />
-              <JobTags job={job} dark={job.brand === 'spotify'} />
+              <JobTags job={job} />
             </div>
             <JobMeta job={job} />
           </div>
@@ -50,12 +50,12 @@ export function JobDetails({ job, view }: { job: Job; view: BoardView }) {
               }}>Restore to Discover</button>
             ) : (
               <>
-                <button className="button button--white" disabled={applied} aria-pressed={saved} onClick={() => {
+                <button className="button button--inverse" disabled={applied} aria-pressed={saved} onClick={() => {
                   setActivity(job.id, saved ? '' : 'saved');
                   setFeedback(saved ? 'Job removed from Saved.' : 'Job saved.');
                 }}>{saved ? 'Saved' : 'Save'}</button>
                 <button className="button button--primary" disabled={applied} onClick={() => setApplicationOpen(true)}>
-                  {applied ? 'Applied' : 'Apply Now'} {!applied && <Asset name="arrow-right.svg" />}
+                  {applied ? 'Applied' : 'Apply Now'} {!applied && <Icon name="arrow-right.svg" />}
                 </button>
               </>
             )}

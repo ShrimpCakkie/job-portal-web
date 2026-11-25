@@ -2,23 +2,27 @@ import { StrictMode, useEffect, useLayoutEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { JobBoard } from './JobBoard';
 import { JobDetails } from './JobDetails';
-import { Welcome } from './Welcome';
+import { Login } from './Login';
 import { jobs } from './jobs';
 import { boardHref, initialView, useRoute } from './navigation';
+import './theme.css';
 import './styles.css';
+import './login.css';
 
 function App() {
   const route = useRoute();
   const job = route.screen === 'details' ? jobs.find(entry => entry.id === route.jobId) : undefined;
   const screen = route.screen === 'details' && !job ? 'missing' : route.screen;
-  const title = job ? `${job.title} at ${job.company}` : screen === 'board' ? 'Find Jobs' : 'Job Portal';
+  const isLogin = screen === 'onboarding';
+  const title = job ? `${job.title} at ${job.company} | Job Portal` : screen === 'board' ? 'Find Jobs | Job Portal' : 'Job Portal';
   const screenKey = job?.id ?? screen;
   const previousScreen = useRef(screenKey);
   const main = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    document.title = title === 'Job Portal' ? title : `${title} | Job Portal`;
-  }, [title]);
+    document.title = isLogin ? '交大团团' : title;
+    document.documentElement.lang = isLogin ? 'zh-Hans' : 'en';
+  }, [isLogin, title]);
 
   useLayoutEffect(() => {
     if (previousScreen.current === screenKey) return;
@@ -29,7 +33,7 @@ function App() {
 
   return (
     <main ref={main} tabIndex={-1}>
-      {route.screen === 'onboarding' && <Welcome />}
+      {isLogin && <Login />}
       {route.screen === 'board' && <JobBoard view={route.view} />}
       {route.screen === 'details' && job && <JobDetails key={job.id} job={job} view={route.view} />}
       {screen === 'missing' && (
